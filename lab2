@@ -1,0 +1,39 @@
+#!/bin/bash
+#Stephanie SPencer
+#Lab2 - Search and Report
+#CS 3030 - Scripting Languages
+
+
+
+
+if [ $# -ne 1 ]; then
+	printf "Usage: srpt PATH"
+	exit 1
+else
+mkdir /tmp/$USER
+find $1 \( -type f -fprintf /tmp/$USER/sizeofallfiles "%s\n" \) 
+dirCount=$(find $1 -mindepth 1 -type d | wc -l)
+fileCount=$(find $1 -type f | wc -l)
+symCount=$(find $1 -type l | wc -l)
+oldCount=$(find $1 -type f -mtime +365 | wc -l)
+largeCount=$(find $1 -type f -size +500000c | wc -l)
+graphicsCount=$(find $1 -name \*.jpg -o -name \*.bmp -o -name \*.gif | wc -l)
+tempCount=$(find $1 -name \*.o | wc -l)
+exeCount=$(find $1 -executable -type f | wc -l)
+totalFileSize=$(awk '{tot=tot+$1} END {print tot}' "/tmp/$USER/sizeofallfiles")
+
+printf "SearchReport $HOSTNAME $PATH/%s\n"
+date
+#printf "SearchReport %s\n" "$HOSTNAME date"
+printf "Execution time %'d\n" $SECONDS
+printf "Directories %'d\n" $dirCount
+printf "Files %'d\n" $fileCount
+printf "Sym links %'d\n" $symCount
+printf "Old files %'d\n" $oldCount
+printf "Large files %'d\n" $largeCount
+printf "Graphics files %'d\n" $graphicsCount
+printf "Temporary files %'d\n" $tempCount
+printf "Executable files %'d\n" $exeCount
+printf "TotalFileSize %'d\n" $totalFileSize
+rm -rf /tmp/$USER
+fi
