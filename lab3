@@ -1,0 +1,29 @@
+#!/bin/bash
+#Stephanie Spencer
+#Lab 3 - Failed Login Report
+#CS 3030 - Scripting Languages
+
+
+
+if [ $# -ne 1 ]; then
+	printf "Usage: flog PATH"
+	exit 1
+else
+grep 'Failed password for ' $1 >s1out
+sed -n 's/.*Failed password for \([a-z0-9A-Z_]*\) .*/\1/p' $1 >s2out
+sort <s2out >s3out
+uniq -c <s3out >s4out
+sort -k1,1nr -k2,2 s4out >s5out
+sed 's/invalid/\&lt;UNKNOWN\&gt;/' <s5out >s6out
+cat s6out| while read mycount myuserid; do
+	printf "%'d %s\n" "$mycount" "$myuserid" >>s7out
+done
+now=$(date)
+echo "<html>"
+echo "<body><h1>Failed Login Attempts Report as of $now</h1>"
+cat s7out| while read lines; do
+	echo "<br />" "$lines"
+done
+echo -n ""
+echo "</body> </html>"
+fi
